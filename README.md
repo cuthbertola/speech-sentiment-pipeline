@@ -169,7 +169,7 @@ SENTIMENT_MODEL=cardiffnlp/twitter-roberta-base-sentiment-latest
 
 **Olawale Badekale**
 - GitHub: [@cuthbertola](https://github.com/cuthbertola)
-- LinkedIn: [Olawale Badekale](https://linkedin.com/in/olawalebadekale)
+- LinkedIn: [Olawale Badekale](https://www.linkedin.com/in/badekaleolawale/)
 
 ## License
 
