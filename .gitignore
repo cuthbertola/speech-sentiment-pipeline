@@ -38,6 +38,6 @@ Thumbs.db
 *.log
 logs/
 
-# Model cache
+# Model cache (ML models, not app/models)
 .cache/
-models/
+cached_models/
