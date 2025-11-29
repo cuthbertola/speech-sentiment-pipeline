@@ -1,8 +1,16 @@
-# 🎙️ Speech-to-Text + Sentiment Analysis Pipeline
+# Speech-to-Text + Sentiment Analysis Pipeline
 
 Real-time speech transcription with sentiment analysis and entity extraction for customer service call analysis.
 
-## 🎯 Features
+## Screenshots
+
+### Upload Screen
+![Upload Screen](docs/images/upload-screen.png)
+
+### Analysis Results
+![Analysis Screen](docs/images/analysis-screen.png)
+
+## Features
 
 - **Audio Upload**: Support for MP3, WAV, M4A, FLAC, OGG formats
 - **Transcription**: Real-time speech-to-text using OpenAI Whisper
@@ -11,7 +19,7 @@ Real-time speech transcription with sentiment analysis and entity extraction for
 - **Summarization**: Automatic call summary with key phrases and action items
 - **Word Timestamps**: Word-level timing for transcript synchronization
 
-## 📊 Target Metrics
+## Target Metrics
 
 | Metric | Target | Description |
 |--------|--------|-------------|
@@ -20,26 +28,29 @@ Real-time speech transcription with sentiment analysis and entity extraction for
 | Processing Time | <2x audio | 1 min audio = <2 min processing |
 | Entity F1 | 0.82+ | Entity extraction quality |
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Speech-to-Text**: OpenAI Whisper
-- **NLP**: spaCy, HuggingFace Transformers
-- **Sentiment**: RoBERTa (cardiffnlp/twitter-roberta-base-sentiment)
-- **Backend**: FastAPI
-- **Database**: SQLite (dev) / PostgreSQL (prod)
-- **MLOps**: MLflow
+| Component | Technology |
+|-----------|------------|
+| Speech-to-Text | OpenAI Whisper |
+| Sentiment Analysis | RoBERTa (HuggingFace) |
+| Entity Extraction | spaCy NER |
+| Backend | FastAPI + SQLAlchemy |
+| Frontend | React + TypeScript |
+| Database | SQLite (dev) / PostgreSQL (prod) |
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
 - Python 3.9+
+- Node.js 18+
 - FFmpeg
 
-### Installation
+### Backend Setup
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/speech-sentiment-pipeline.git
+git clone https://github.com/cuthbertola/speech-sentiment-pipeline.git
 cd speech-sentiment-pipeline
 
 # Setup backend
@@ -50,13 +61,22 @@ pip install -r requirements.txt
 
 # Download NLP models
 python -m spacy download en_core_web_sm
-python -c "import nltk; nltk.download('punkt'); nltk.download('averaged_perceptron_tagger')"
 
 # Run server
 python -m uvicorn app.main:app --reload --port 8002
 ```
 
-### API Endpoints
+### Frontend Setup
+```bash
+# In a new terminal
+cd frontend
+npm install
+npm start
+```
+
+Open http://localhost:3000 in your browser.
+
+## API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -70,20 +90,7 @@ python -m uvicorn app.main:app --reload --port 8002
 | GET | `/api/v1/analysis/{id}/summary` | Get summary |
 | GET | `/api/v1/health/` | Health check |
 
-### Example Usage
-```bash
-# Upload audio
-curl -X POST "http://localhost:8002/api/v1/audio/upload" \
-  -F "file=@audio.wav"
-
-# Process audio (returns transcript, sentiment, entities, summary)
-curl -X POST "http://localhost:8002/api/v1/audio/1/process"
-
-# Get full analysis
-curl "http://localhost:8002/api/v1/analysis/1/full"
-```
-
-## 📁 Project Structure
+## Project Structure
 ```
 speech-sentiment-pipeline/
 ├── backend/
@@ -99,14 +106,57 @@ speech-sentiment-pipeline/
 │   │   │   ├── summarization.py # Summarization
 │   │   │   └── pipeline.py      # Orchestration
 │   │   └── core/                # Database connection
-│   ├── requirements.txt
-│   └── .env
-├── data/
-│   └── audio_samples/
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/          # React components
+│   │   ├── services/            # API client
+│   │   ├── types/               # TypeScript types
+│   │   └── App.tsx              # Main app
+│   └── package.json
+├── docs/images/                  # Screenshots
 └── README.md
 ```
 
-## 🔧 Configuration
+## API Response Example
+```json
+{
+  "audio": {
+    "id": 1,
+    "filename": "speech_test.wav",
+    "duration_seconds": 33.6,
+    "status": "completed"
+  },
+  "transcript": {
+    "full_text": "The birch canoes lid on the smooth planks...",
+    "language": "en",
+    "word_count": 81,
+    "processing_time_seconds": 1.6
+  },
+  "sentiment": {
+    "overall_sentiment": "neutral",
+    "confidence": 0.829,
+    "scores": {
+      "positive": 0.082,
+      "negative": 0.089,
+      "neutral": 0.829
+    }
+  },
+  "entities": {
+    "entities": [
+      {"text": "These days", "label": "DATE"},
+      {"text": "Four hours", "label": "TIME"}
+    ],
+    "entity_counts": {"DATE": 1, "PERSON": 1, "ORG": 1, "TIME": 1}
+  },
+  "summary": {
+    "summary": "The birch canoes lid on the smooth planks...",
+    "key_phrases": ["the birch canoes", "the smooth planks", "the sheet"]
+  }
+}
+```
+
+## Configuration
 
 Environment variables (`.env`):
 ```env
@@ -115,43 +165,12 @@ WHISPER_DEVICE=cpu         # cpu or cuda
 SENTIMENT_MODEL=cardiffnlp/twitter-roberta-base-sentiment-latest
 ```
 
-## 📈 API Response Example
-```json
-{
-  "audio": {
-    "id": 1,
-    "filename": "call_001.wav",
-    "duration_seconds": 122.0,
-    "status": "completed"
-  },
-  "transcript": {
-    "full_text": "Hello, I'm calling about my order...",
-    "language": "en",
-    "word_count": 150
-  },
-  "sentiment": {
-    "overall_sentiment": "neutral",
-    "confidence": 0.85,
-    "scores": {"positive": 0.10, "negative": 0.05, "neutral": 0.85}
-  },
-  "entities": {
-    "entities": [{"text": "John Smith", "label": "PERSON"}],
-    "entity_counts": {"PERSON": 1}
-  },
-  "summary": {
-    "summary": "Customer called regarding order status...",
-    "key_phrases": ["order status", "delivery date"],
-    "action_items": ["Follow up on delivery"]
-  }
-}
-```
-
-## 👤 Author
+## Author
 
 **Olawale Badekale**
 - GitHub: [@cuthbertola](https://github.com/cuthbertola)
 - LinkedIn: [Olawale Badekale](https://linkedin.com/in/olawalebadekale)
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
