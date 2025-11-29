@@ -171,11 +171,11 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleUploadComplete = async (audioId: number) => {
+  const handleUploadComplete = async (audioId: string | number) => {
     setLoading(true);
     setError(null);
     try {
-      const result = await getFullAnalysis(audioId);
+      const result = await getFullAnalysis(String(audioId));
       setAnalysis(result);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to load analysis');
