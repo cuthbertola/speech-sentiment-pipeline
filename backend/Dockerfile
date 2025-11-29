@@ -18,6 +18,9 @@ COPY . .
 # Create data directory
 RUN mkdir -p data/audio_samples
 
+# Set Python path
+ENV PYTHONPATH=/app
+
 EXPOSE 8000
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
